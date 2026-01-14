@@ -1,5 +1,5 @@
-import { db } from '../src/db";
-import { user as userTable, session as sessionTable } from '../src/db/schema";
+import { db } from '../src/db';
+import { user as userTable, session as sessionTable } from '../src/db/schema';
 import { eq } from "drizzle-orm";
 
 async function testSession() {
