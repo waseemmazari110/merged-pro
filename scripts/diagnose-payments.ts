@@ -149,13 +149,13 @@ async function runDiagnostics() {
     
     const totalCharges = charges.data.length;
     const totalIntents = intents.data.length;
-    const dbPayments = dbTest.rows[0]?.count || 0;
+    const dbPaymentsCount = Number(dbTest.rows[0]?.count) || 0;
     
     console.log(`Stripe Charges: ${totalCharges}`);
     console.log(`Stripe Payment Intents: ${totalIntents}`);
-    console.log(`Database Payments: ${dbPayments}`);
+    console.log(`Database Payments: ${dbPaymentsCount}`);
     
-    if (dbPayments === 0 && totalCharges > 0) {
+    if (dbPaymentsCount === 0 && totalCharges > 0) {
       console.log('\n⚠️  ISSUE DETECTED:');
       console.log('   Charges exist in Stripe but NOT in database!');
       console.log('   Possible causes:');
@@ -163,9 +163,9 @@ async function runDiagnostics() {
       console.log('   2. Webhook signature verification is failing');
       console.log('   3. Payment metadata does not include userId');
       console.log('   4. Database insert is failing silently');
-    } else if (dbPayments === totalCharges) {
+    } else if (dbPaymentsCount === totalCharges) {
       console.log('\n✅ Everything is working correctly!');
-    } else if (dbPayments > 0 && totalCharges > 0) {
+    } else if (dbPaymentsCount > 0 && totalCharges > 0) {
       console.log('\n✅ Payments are being tracked!');
     }
     
