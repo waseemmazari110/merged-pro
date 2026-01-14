@@ -67,6 +67,9 @@ export async function GET(
 
     const events: CalendarEvent[] = [];
 
+    // Get property title for filtering bookings
+    const propertyName = property[0].title;
+
     // 1. Get all bookings for this property (past 30 days to future)
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -76,7 +79,7 @@ export async function GET(
       .from(bookings)
       .where(
         and(
-          eq(bookings.propertyId, propertyId),
+          eq(bookings.propertyName, propertyName),
           gte(bookings.checkOutDate, thirtyDaysAgoStr)
         )
       );
