@@ -29,9 +29,9 @@ async function runDiagnostics() {
 
     // 2. Check Stripe API connection
     console.log('✓ 2. STRIPE API CONNECTION');
-    const account = await stripe.account.retrieve();
+    const account = await stripe.accounts.retrieve();
     console.log(`   ✅ Stripe API accessible`);
-    console.log(`   🏪 Account: ${account.display_name || 'N/A'}`);
+    console.log(`   🏪 Account: ${account.business_profile?.name || 'N/A'}`);
     console.log(`   🌍 Country: ${account.country || 'N/A'}\n`);
 
     // 3. List recent charges from Stripe
