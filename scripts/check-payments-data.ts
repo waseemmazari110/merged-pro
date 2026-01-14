@@ -48,9 +48,9 @@ async function checkPaymentsData() {
     console.log(`↩ Refunded: ${refunded.length}\n`);
 
     // 3. Group by user role
-    const ownerPayments = allPayments.filter(p => p.user?.role === 'owner' || p.payment.userRole === 'owner');
-    const guestPayments = allPayments.filter(p => p.user?.role === 'guest' || p.payment.userRole === 'guest');
-    const adminPayments = allPayments.filter(p => p.user?.role === 'admin' || p.payment.userRole === 'admin');
+    const ownerPayments = allPayments.filter(p => p.user?.role === 'owner');
+    const guestPayments = allPayments.filter(p => p.user?.role === 'guest');
+    const adminPayments = allPayments.filter(p => p.user?.role === 'admin');
 
     console.log('Payments by User Role:');
     console.log(`👤 Owner: ${ownerPayments.length}`);
