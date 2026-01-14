@@ -33,6 +33,12 @@ async function backfillInvoices() {
 
     for (const subscription of allSubscriptions) {
       try {
+        // Skip if no Stripe subscription ID
+        if (!subscription.stripeSubscriptionId) {
+          console.log(`Skipping subscription ${subscription.id} - no Stripe subscription ID`);
+          continue;
+        }
+
         // Get invoices from Stripe for this subscription
         const stripeInvoices = await stripe.invoices.list({
           subscription: subscription.stripeSubscriptionId,

@@ -72,3 +72,55 @@ export function formatMonthYear(date: Date | string): string {
     year: 'numeric' 
   });
 }
+
+/**
+ * Get current UK date in formatted string: dd/mm/yyyy
+ */
+export function nowUKFormatted(): string {
+  return formatDateUKLong(new Date());
+}
+
+/**
+ * Parse UK date format (dd/mm/yyyy or dd/mm/yy) to Date object
+ */
+export function parseUKDate(ukDateString: string): Date {
+  const parts = ukDateString.split('/');
+  if (parts.length === 3) {
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1; // Month is 0-indexed
+    let year = parseInt(parts[2], 10);
+    
+    // Handle 2-digit year
+    if (year < 100) {
+      year += 2000;
+    }
+    
+    return new Date(year, month, day);
+  }
+  
+  throw new Error(`Invalid UK date format: ${ukDateString}`);
+}
+
+/**
+ * Add days to a UK date string and return as UK formatted string
+ */
+export function addDaysUK(ukDateString: string, days: number): string {
+  const date = parseUKDate(ukDateString);
+  date.setDate(date.getDate() + days);
+  return formatDateUKLong(date);
+}
+
+/**
+ * Calculate next billing date based on interval
+ */
+export function calculateNextBillingDate(currentDate: string, interval: 'month' | 'year', intervalCount: number = 1): string {
+  const date = new Date(currentDate);
+  
+  if (interval === 'month') {
+    date.setMonth(date.getMonth() + intervalCount);
+  } else if (interval === 'year') {
+    date.setFullYear(date.getFullYear() + intervalCount);
+  }
+  
+  return formatDateUKLong(date);
+}

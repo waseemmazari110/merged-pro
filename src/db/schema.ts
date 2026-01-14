@@ -413,3 +413,131 @@ export const payments = sqliteTable('payments', {
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
 });
+
+// Availability Calendar table
+export const availabilityCalendar = sqliteTable('availability_calendar', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  propertyId: integer('property_id').notNull().references(() => properties.id, { onDelete: 'cascade' }),
+  date: text('date').notNull(),
+  status: text('status').notNull().default('available'),
+  priceOverride: real('price_override'),
+  minStay: integer('min_stay'),
+  notes: text('notes'),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
+// Seasonal Pricing table
+export const seasonalPricing = sqliteTable('seasonal_pricing', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  propertyId: integer('property_id').notNull().references(() => properties.id, { onDelete: 'cascade' }),
+  seasonName: text('season_name').notNull(),
+  startDate: text('start_date').notNull(),
+  endDate: text('end_date').notNull(),
+  priceMultiplier: real('price_multiplier').notNull(),
+  minStay: integer('min_stay'),
+  isActive: integer('is_active', { mode: 'boolean' }).default(true),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
+// Special Date Pricing table
+export const specialDatePricing = sqliteTable('special_date_pricing', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  propertyId: integer('property_id').notNull().references(() => properties.id, { onDelete: 'cascade' }),
+  eventName: text('event_name').notNull(),
+  date: text('date').notNull(),
+  priceOverride: real('price_override').notNull(),
+  minStay: integer('min_stay'),
+  isActive: integer('is_active', { mode: 'boolean' }).default(true),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
+// CRM Owner Profiles table
+export const crmOwnerProfiles = sqliteTable('crm_owner_profiles', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }).unique(),
+  businessName: text('business_name').notNull(),
+  contactName: text('contact_name').notNull(),
+  email: text('email').notNull(),
+  phone: text('phone'),
+  address: text('address'),
+  postcode: text('postcode'),
+  status: text('status').notNull().default('active'),
+  leadSource: text('lead_source'),
+  tags: text('tags', { mode: 'json' }),
+  notes: text('notes'),
+  lastContactDate: text('last_contact_date'),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
+// CRM Enquiries table
+export const crmEnquiries = sqliteTable('crm_enquiries', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  ownerProfileId: integer('owner_profile_id').references(() => crmOwnerProfiles.id, { onDelete: 'cascade' }),
+  propertyId: integer('property_id').references(() => properties.id, { onDelete: 'set null' }),
+  type: text('type').notNull(),
+  subject: text('subject').notNull(),
+  message: text('message').notNull(),
+  status: text('status').notNull().default('new'),
+  priority: text('priority').notNull().default('normal'),
+  assignedTo: text('assigned_to').references(() => user.id),
+  source: text('source'),
+  metadata: text('metadata', { mode: 'json' }),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
+// CRM Activity Log table
+export const crmActivityLog = sqliteTable('crm_activity_log', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  ownerProfileId: integer('owner_profile_id').references(() => crmOwnerProfiles.id, { onDelete: 'cascade' }),
+  userId: text('user_id').references(() => user.id),
+  activityType: text('activity_type').notNull(),
+  description: text('description').notNull(),
+  metadata: text('metadata', { mode: 'json' }),
+  createdAt: text('created_at').notNull(),
+});
+
+// CRM Notes table
+export const crmNotes = sqliteTable('crm_notes', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  ownerProfileId: integer('owner_profile_id').references(() => crmOwnerProfiles.id, { onDelete: 'cascade' }),
+  userId: text('user_id').references(() => user.id),
+  note: text('note').notNull(),
+  isPinned: integer('is_pinned', { mode: 'boolean' }).default(false),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
+// CRM Property Links table
+export const crmPropertyLinks = sqliteTable('crm_property_links', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  ownerProfileId: integer('owner_profile_id').notNull().references(() => crmOwnerProfiles.id, { onDelete: 'cascade' }),
+  propertyId: integer('property_id').notNull().references(() => properties.id, { onDelete: 'cascade' }),
+  isPrimary: integer('is_primary', { mode: 'boolean' }).default(false),
+  createdAt: text('created_at').notNull(),
+});
+
+// Media table
+export const media = sqliteTable('media', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
+  propertyId: integer('property_id').references(() => properties.id, { onDelete: 'cascade' }),
+  filename: text('filename').notNull(),
+  originalFilename: text('original_filename').notNull(),
+  mimeType: text('mime_type').notNull(),
+  fileSize: integer('file_size').notNull(),
+  url: text('url').notNull(),
+  thumbnailUrl: text('thumbnail_url'),
+  width: integer('width'),
+  height: integer('height'),
+  altText: text('alt_text'),
+  caption: text('caption'),
+  tags: text('tags', { mode: 'json' }),
+  metadata: text('metadata', { mode: 'json' }),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
