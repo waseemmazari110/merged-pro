@@ -48,7 +48,7 @@ async function main() {
         name: adminName,
         password: hashedPassword,
         role: "admin",
-        emailVerified: new Date(),
+        emailVerified: true,
       })
       .returning();
 
