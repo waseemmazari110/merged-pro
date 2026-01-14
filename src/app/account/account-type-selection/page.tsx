@@ -25,12 +25,18 @@ export default function AccountTypeSelectionPage() {
   const handleSelect = async (role: "customer" | "owner") => {
     setIsLoading(true);
     try {
-      const { error } = await authClient.user.update({
-        role: role,
+      const response = await fetch("/api/user/update-role", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ role }),
       });
 
-      if (error) {
-        toast.error(error.message || "Failed to update account type");
+      const data = await response.json();
+
+      if (!response.ok || data.error) {
+        toast.error(data.error || "Failed to update account type");
         setIsLoading(false);
         return;
       }
@@ -38,6 +44,7 @@ export default function AccountTypeSelectionPage() {
       toast.success(`Account set up as ${role === "owner" ? "Owner" : "Customer"}`);
       router.push(role === "owner" ? "/owner-dashboard" : "/account/dashboard");
     } catch (err) {
+      console.error("Error:", err);
       toast.error("An error occurred");
       setIsLoading(false);
     }
