@@ -1,0 +1,23 @@
+CREATE TABLE `bookings` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`property_name` text NOT NULL,
+	`property_location` text,
+	`guest_name` text NOT NULL,
+	`guest_email` text NOT NULL,
+	`guest_phone` text NOT NULL,
+	`check_in_date` text NOT NULL,
+	`check_out_date` text NOT NULL,
+	`number_of_guests` integer NOT NULL,
+	`occasion` text,
+	`booking_status` text DEFAULT 'pending' NOT NULL,
+	`total_price` real,
+	`deposit_amount` real,
+	`deposit_paid` integer DEFAULT false,
+	`balance_amount` real,
+	`balance_paid` integer DEFAULT false,
+	`special_requests` text,
+	`experiences_selected` text,
+	`admin_notes` text,
+	`created_at` text NOT NULL,
+	`updated_at` text NOT NULL
+);

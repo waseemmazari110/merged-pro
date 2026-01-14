@@ -1,0 +1,20 @@
+# Group Escape Houses
+
+> Luxury large group accommodation across the UK with hot tubs, pools, and stylish interiors.
+
+## Key Content
+- [Destinations](/destinations): Browse group houses by UK city and region.
+- [Properties](/properties): View all available luxury group accommodation.
+- [Experiences](/experiences): Bookable add-ons including cocktail masterclasses and private chefs.
+- [Hen Party Houses](/hen-party-houses): Specialist accommodation for hen weekends.
+- [Planning Tips & Inspiration](/inspiration): Expert guides for group holiday planning.
+
+## Technical Details
+- Base URL: https://www.groupescapehouses.co.uk
+- Sitemap: https://www.groupescapehouses.co.uk/sitemap.xml
+- Contact: https://www.groupescapehouses.co.uk/contact
+
+## Rules for AI Crawlers
+- Do not index /admin/* paths.
+- Respect robots.txt and sitemap.xml.
+- Focus on property details, destination guides, and experience descriptions.
