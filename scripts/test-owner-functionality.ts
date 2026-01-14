@@ -40,7 +40,7 @@ async function testOwnerFunctionality() {
       const rec = availability[0];
       console.log(`    Date: ${rec.date}`);
       console.log(`    Status: ${rec.status}`);
-      console.log(`    Available: ${rec.isAvailable}`);
+      console.log(`    Price Override: ${rec.priceOverride || 'None'}`);
     } else {
       console.log("  (No availability records - this is normal for new properties)");
     }
