@@ -9,6 +9,31 @@ import crypto from "crypto";
 import { verifyPassword } from "better-auth/crypto";
 import { sendWelcomeEmail, sendMagicLinkEmail } from "./email";
 
+// Extended session type to include user role
+export interface ExtendedUser {
+	id: string;
+	email: string;
+	name: string;
+	role?: string;
+	emailVerified?: boolean;
+	image?: string | null;
+	createdAt?: Date;
+	updatedAt?: Date;
+	phoneNumber?: string | null;
+	propertyName?: string | null;
+	propertyWebsite?: string | null;
+}
+
+export interface ExtendedSession {
+	user: ExtendedUser;
+	session?: {
+		id: string;
+		expiresAt: Date;
+		ipAddress?: string;
+		userAgent?: string;
+	};
+}
+
 const makeSignature = (password: string, secret: string) => {
 	const hmac = crypto.createHmac("sha256", secret);
 	hmac.update(password);
