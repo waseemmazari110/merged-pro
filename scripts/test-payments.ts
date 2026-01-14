@@ -1,7 +1,7 @@
 import { config } from 'dotenv';
 config();
 
-import { stripe } from '@/lib/stripe-billing';
+import { stripe } from '../src/lib/stripe-client';
 import { db } from '@/db';
 import { payments } from '@/db/schema';
 
