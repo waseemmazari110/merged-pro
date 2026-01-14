@@ -9,9 +9,9 @@
 
 import { db } from "./src/db";
 import { user as userTable } from "./src/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, count } from "drizzle-orm";
 import crypto from "crypto";
-import { hash } from "better-auth/crypto";
+import { hashPassword } from "better-auth/crypto";
 
 async function setupAdminDashboard() {
   console.log("🚀 Admin Dashboard Setup & Verification\n");
@@ -32,7 +32,7 @@ async function setupAdminDashboard() {
       
       // Generate a proper password hash
       const password = "Admin123";
-      const hashedPassword = await hash(password);
+      const hashedPassword = await hashPassword(password);
 
       const adminId = crypto.randomUUID();
       
@@ -62,12 +62,12 @@ async function setupAdminDashboard() {
     // Step 2: Check database connectivity
     console.log("📋 Step 2: Checking database connectivity...");
     
-    const userCount = await db
-      .select({ count: db.sql`COUNT(*)` })
+    const userCountResult = await db
+      .select({ count: count() })
       .from(userTable)
       .get();
 
-    console.log(`✅ Database connected! Total users: ${userCount?.count || 0}\n`);
+    console.log(`✅ Database connected! Total users: ${userCountResult?.count || 0}\n`);
 
     // Step 3: Verify admin endpoints are accessible
     console.log("📋 Step 3: Verifying admin endpoints...");

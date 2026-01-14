@@ -142,9 +142,9 @@ export const crmPropertyLinksRelations = relations(crmPropertyLinks, ({one}) => 
 		fields: [crmPropertyLinks.propertyId],
 		references: [properties.id]
 	}),
-	user: one(user, {
-		fields: [crmPropertyLinks.ownerId],
-		references: [user.id]
+	crmOwnerProfile: one(crmOwnerProfiles, {
+		fields: [crmPropertyLinks.ownerProfileId],
+		references: [crmOwnerProfiles.id]
 	}),
 }));
 

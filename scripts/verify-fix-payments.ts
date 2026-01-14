@@ -80,8 +80,8 @@ async function verifyAndFixPayments() {
       console.log('     Command: npx tsx backfill-missing-payments.ts\n');
     }
 
-    if (paymentsWithoutPlan.length > 0) {
-      console.log('   → Update payments with subscription plan data');
+    if (paymentsWithoutSubscription.length > 0) {
+      console.log('   → Update payments with subscription link data');
       console.log('     Command: See PAYMENT_TRANSACTION_TRACKING_GUIDE.md\n');
     }
 
@@ -95,7 +95,7 @@ async function verifyAndFixPayments() {
     console.log('  - Show detailed results\n');
     
     // For automated runs, check if there are missing payments and recommend manual action
-    if (subsWithoutPayments.length > 0 || paymentsWithoutPlan.length > 0) {
+    if (subsWithoutPayments.length > 0 || paymentsWithoutSubscription.length > 0) {
       console.log('⚠️  ACTION REQUIRED:\n');
       console.log('Run the following command to fix payment records:');
       console.log('  npx tsx backfill-missing-payments.ts\n');

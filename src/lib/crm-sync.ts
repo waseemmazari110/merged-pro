@@ -801,7 +801,7 @@ export async function syncPropertiesToCRM(
           .from(crmPropertyLinks)
           .where(
             and(
-              eq(crmPropertyLinks.ownerId, ownerId),
+              eq(crmPropertyLinks.ownerProfileId, ownerId),
               eq(crmPropertyLinks.propertyId, property.id)
             )
           )
@@ -819,7 +819,7 @@ export async function syncPropertiesToCRM(
             })
             .where(
               and(
-                eq(crmPropertyLinks.ownerId, ownerId),
+                eq(crmPropertyLinks.ownerProfileId, ownerId),
                 eq(crmPropertyLinks.propertyId, property.id)
               )
             );

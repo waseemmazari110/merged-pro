@@ -236,10 +236,18 @@ async function testCRMPropertySync() {
     const syncResult = await syncPropertiesToCRM(ownerId);
     console.log(`✓ Sync completed. Properties synced: ${syncResult.propertySyncCount}`);
 
+    // Get CRM owner profile to verify links
+    const crmProfile = await db.select()
+      .from(crmOwnerProfiles)
+      .where(eq(crmOwnerProfiles.userId, ownerId))
+      .limit(1);
+
     // Verify CRM links
-    const crmLinks = await db.select()
-      .from(crmPropertyLinks)
-      .where(eq(crmPropertyLinks.ownerId, ownerId));
+    const crmLinks = crmProfile.length > 0 
+      ? await db.select()
+          .from(crmPropertyLinks)
+          .where(eq(crmPropertyLinks.ownerProfileId, crmProfile[0].id))
+      : [];
 
     console.log(`CRM property links: ${crmLinks.length}\n`);
 
@@ -262,11 +270,10 @@ async function testCRMPropertySync() {
         console.log(`❌ Property ${prop.id} (${prop.title}) - NOT IN CRM`);
         allMatch = false;
       } else {
-        // CRM links only track propertyId and linkStatus
+        // CRM links track property relationship and primary status
         // Property details fetched via join, so just verify link exists
         console.log(`✅ Property ${prop.id} (${prop.title}) - CRM link exists`);
-        console.log(`   Link status: ${link.linkStatus}`);
-        console.log(`   Ownership: ${link.ownershipType || 'N/A'}`);
+        console.log(`   Primary: ${link.isPrimary ? 'Yes' : 'No'}`);
       }
     }
 
@@ -309,7 +316,7 @@ async function testCRMProfileExists() {
         console.log(`✅ ${owner.email} - CRM profile exists`);
         console.log(`   Business: ${profile[0].businessName || 'N/A'}`);
         console.log(`   Status: ${profile[0].status || 'N/A'}`);
-        console.log(`   Country: ${profile[0].country || 'N/A'}`);
+        console.log(`   Lead Source: ${profile[0].leadSource || 'N/A'}`);
       } else {
         console.log(`❌ ${owner.email} - NO CRM PROFILE`);
         allHaveProfiles = false;

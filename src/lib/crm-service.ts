@@ -381,7 +381,7 @@ export class InternalCRMService {
       const links = await db
         .select()
         .from(crmPropertyLinks)
-        .where(eq(crmPropertyLinks.ownerId, ownerId))
+        .where(eq(crmPropertyLinks.ownerProfileId, ownerId))
         .orderBy(desc(crmPropertyLinks.createdAt));
 
       return { success: true, properties: links };

@@ -348,16 +348,10 @@ export const crmOwnerProfiles = sqliteTable("crm_owner_profiles", {
 
 export const crmPropertyLinks = sqliteTable("crm_property_links", {
 	id: integer().primaryKey({ autoIncrement: true }).notNull(),
-	ownerId: text("owner_id").notNull().references(() => user.id, { onDelete: "cascade" } ),
+	ownerProfileId: integer("owner_profile_id").notNull().references(() => crmOwnerProfiles.id, { onDelete: "cascade" } ),
 	propertyId: integer("property_id").references(() => properties.id, { onDelete: "cascade" } ),
-	linkStatus: text("link_status").default("active").notNull(),
-	ownershipType: text("ownership_type").default("full"),
-	commissionRate: real("commission_rate"),
-	contractStartDate: text("contract_start_date"),
-	contractEndDate: text("contract_end_date"),
-	notes: text(),
+	isPrimary: integer("is_primary", { mode: "boolean" }).default(false),
 	createdAt: text("created_at").notNull(),
-	updatedAt: text("updated_at").notNull(),
 });
 
 export const enquiries = sqliteTable("enquiries", {

@@ -38,8 +38,7 @@ async function main() {
     console.log("❌ User does not exist. Creating...\n");
 
     // Hash password
-    const { salt, key } = await hashPassword(adminPassword);
-    const hashedPassword = `${salt}:${key}`;
+    const hashedPassword = await hashPassword(adminPassword);
 
     // Create user
     const newUser = await db
