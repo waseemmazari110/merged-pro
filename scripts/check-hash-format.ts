@@ -1,5 +1,5 @@
-import { db } from "../src/db';
-import { account } from "../src/db/schema';
+import { db } from '../src/db';
+import { account } from '../src/db/schema';
 
 async function main() {
   const accounts = await db.select().from(account).limit(5);
