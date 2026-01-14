@@ -93,7 +93,13 @@ async function runDiagnostics() {
         console.log(`      ID: ${sub.id}`);
         console.log(`      Customer: ${sub.customer}`);
         console.log(`      Plan: ${(sub.items.data[0]?.price as any)?.product}`);
-        console.log(`      Current Period: ${new Date(sub.current_period_start * 1000).toISOString()} to ${new Date(sub.current_period_end * 1000).toISOString()}`);
+        const periodStart = (sub as any).current_period_start || 'N/A';
+        const periodEnd = (sub as any).current_period_end || 'N/A';
+        if (periodStart !== 'N/A' && periodEnd !== 'N/A') {
+          console.log(`      Current Period: ${new Date(periodStart * 1000).toISOString()} to ${new Date(periodEnd * 1000).toISOString()}`);
+        } else {
+          console.log(`      Current Period: N/A`);
+        }
       });
       console.log();
     }
