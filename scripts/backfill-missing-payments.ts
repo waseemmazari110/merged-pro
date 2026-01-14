@@ -126,8 +126,6 @@ async function backfillMissingPayments() {
             stripeChargeId: charge?.id || null,
             stripeInvoiceId: paymentIntent.metadata?.invoice || paymentIntent.metadata?.invoiceId || null,
             stripeSubscriptionId: sub.stripeSubscriptionId,
-            subscriptionPlan: sub.planName,
-            userRole: userRecord?.role || 'owner',
             amount: paymentIntent.amount / 100, // Convert from cents
             currency: paymentIntent.currency.toUpperCase(),
             paymentStatus: paymentIntent.status,

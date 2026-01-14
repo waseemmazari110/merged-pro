@@ -32,7 +32,7 @@ async function testConnection() {
         console.log(`   Amount: ${payment.currency} ${payment.amount}`);
         console.log(`   Status: ${payment.paymentStatus}`);
         console.log(`   Created: ${payment.createdAt}`);
-        console.log(`   Plan: ${payment.subscriptionPlan || 'N/A'}`);
+        console.log(`   Subscription ID: ${payment.subscriptionId || 'N/A'}`);
       });
     } else {
       console.log('\n⚠️  No payment records found in database');

@@ -35,12 +35,12 @@ async function verifyAndFixPayments() {
       issues.push('⚠️  CRITICAL: Subscriptions exist but NO payment records found');
     }
 
-    const paymentsWithoutPlan = allPayments.filter(
-      p => !p.subscriptionPlan
+    const paymentsWithoutSubscription = allPayments.filter(
+      p => !p.subscriptionId
     );
     
-    if (paymentsWithoutPlan.length > 0) {
-      issues.push(`⚠️  ${paymentsWithoutPlan.length} payments missing subscription plan info`);
+    if (paymentsWithoutSubscription.length > 0) {
+      issues.push(`⚠️  ${paymentsWithoutSubscription.length} payments missing subscription link`);
     }
 
     // Check for subscriptions without payments

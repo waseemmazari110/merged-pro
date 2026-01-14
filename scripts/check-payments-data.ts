@@ -73,7 +73,7 @@ async function checkPaymentsData() {
     allPayments.slice(0, 10).forEach((p) => {
       const userName = p.user?.name || p.payment.receiptEmail || 'Unknown';
       const amount = `${p.payment.currency} ${p.payment.amount.toFixed(2)}`;
-      const plan = p.payment.subscriptionPlan || p.subscription?.planName || 'N/A';
+      const plan = p.subscription?.planName || 'N/A';
       const status = p.payment.paymentStatus;
       const createdAt = p.payment.createdAt || 'N/A';
 
@@ -90,7 +90,7 @@ async function checkPaymentsData() {
 
     // 5. Check for payments without subscription plan
     const paymentsWithoutPlan = allPayments.filter(
-      p => !p.payment.subscriptionPlan && !p.subscription?.planName
+      p => !p.subscription?.planName
     );
 
     if (paymentsWithoutPlan.length > 0) {
