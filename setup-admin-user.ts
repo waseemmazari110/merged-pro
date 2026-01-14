@@ -1,7 +1,8 @@
 import { db } from "./src/db";
-import { user } from "./src/db/schema";
+import { user, account } from "./src/db/schema";
 import { eq } from "drizzle-orm";
 import { hashPassword } from "better-auth/crypto";
+import { randomUUID } from "crypto";
 
 async function main() {
   const adminEmail = "cswaseem110@gmail.com";
@@ -40,22 +41,37 @@ async function main() {
     // Hash password
     const hashedPassword = await hashPassword(adminPassword);
 
-    // Create user
-    const newUser = await db
+    // Create user (without password field - it goes in account table)
+    const userId = randomUUID();
+    await db
       .insert(user)
       .values({
+        id: userId,
         email: adminEmail,
         name: adminName,
-        password: hashedPassword,
-        role: "admin",
         emailVerified: true,
-      })
-      .returning();
+        role: "admin",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+    // Create account with password
+    await db
+      .insert(account)
+      .values({
+        id: randomUUID(),
+        accountId: userId,
+        providerId: "credential",
+        userId: userId,
+        password: hashedPassword,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
 
     console.log("✅ Admin user created:");
-    console.log(`   Email: ${newUser[0].email}`);
-    console.log(`   Name: ${newUser[0].name}`);
-    console.log(`   Role: ${newUser[0].role}`);
+    console.log(`   Email: ${adminEmail}`);
+    console.log(`   Name: ${adminName}`);
+    console.log(`   Role: admin`);
   }
 
   console.log("\n✅ Admin setup complete!\n");
