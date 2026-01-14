@@ -9,7 +9,7 @@
  *   npx tsx migrate-approval-workflow.ts
  */
 
-import { db } from './src/db';
+import { db } from '../src/db';
 import { sql } from 'drizzle-orm';
 
 async function migrateApprovalWorkflow() {

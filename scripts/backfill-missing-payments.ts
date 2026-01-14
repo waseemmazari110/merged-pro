@@ -5,10 +5,10 @@
 
 import 'dotenv/config';
 import Stripe from 'stripe';
-import { db } from './src/db/index';
-import { payments, subscriptions, user } from './src/db/schema';
+import { db } from '../src/db/index';
+import { payments, subscriptions, user } from '../src/db/schema';
 import { eq } from 'drizzle-orm';
-import { nowUKFormatted } from './src/lib/date-utils';
+import { nowUKFormatted } from '../src/lib/date-utils';
 
 // Initialize Stripe
 const stripeSecretKey = process.env.STRIPE_TEST_KEY || process.env.STRIPE_SECRET_KEY;

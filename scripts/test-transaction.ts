@@ -9,8 +9,8 @@ import { resolve } from 'path';
 // Load environment variables before importing db
 config({ path: resolve(__dirname, '.env') });
 
-import { db } from './src/db';
-import { payments, user } from './src/db/schema';
+import { db } from '../src/db';
+import { payments, user } from '../src/db/schema';
 import { eq } from 'drizzle-orm';
 
 async function createTestTransactions() {

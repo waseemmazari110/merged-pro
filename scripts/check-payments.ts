@@ -8,8 +8,8 @@ import { resolve } from 'path';
 // Load environment variables
 config({ path: resolve(__dirname, '.env') });
 
-import { db } from './src/db';
-import { payments } from './src/db/schema';
+import { db } from '../src/db';
+import { payments } from '../src/db/schema';
 
 async function checkPayments() {
   try {

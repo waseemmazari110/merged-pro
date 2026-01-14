@@ -1,6 +1,6 @@
 // Test to see what hash format better-auth actually creates
-import { db } from './src/db';
-import { account, user } from './src/db/schema';
+import { db } from '../src/db';
+import { account, user } from '../src/db/schema';
 import { eq } from 'drizzle-orm';
 
 async function testPasswordFormat() {

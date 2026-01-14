@@ -3,8 +3,8 @@
  */
 
 import 'dotenv/config';
-import { db } from './src/db/index';
-import { payments, subscriptions } from './src/db/schema';
+import { db } from '../src/db/index';
+import { payments, subscriptions } from '../src/db/schema';
 import { like } from 'drizzle-orm';
 
 async function removeTestData() {

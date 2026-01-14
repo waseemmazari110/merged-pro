@@ -1,6 +1,6 @@
 // Script to check what password format better-auth uses
-import { db } from './src/db';
-import { account } from './src/db/schema';
+import { db } from '../src/db';
+import { account } from '../src/db/schema';
 import { eq } from 'drizzle-orm';
 
 async function checkPasswordFormat() {

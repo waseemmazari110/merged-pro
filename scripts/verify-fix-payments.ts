@@ -4,8 +4,8 @@
  */
 
 import 'dotenv/config';
-import { db } from './src/db/index';
-import { payments, subscriptions, user } from './src/db/schema';
+import { db } from '../src/db/index';
+import { payments, subscriptions, user } from '../src/db/schema';
 import { desc, eq } from 'drizzle-orm';
 import { execSync } from 'child_process';
 

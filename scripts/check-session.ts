@@ -1,6 +1,6 @@
 import 'dotenv/config';
-import { db } from './src/db/index';
-import { user, session } from './src/db/schema';
+import { db } from '../src/db/index';
+import { user, session } from '../src/db/schema';
 import { eq } from 'drizzle-orm';
 
 async function checkUserSession() {

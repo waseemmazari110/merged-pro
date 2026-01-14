@@ -1,6 +1,6 @@
 import 'dotenv/config';
-import { db } from './src/db/index';
-import { user, properties } from './src/db/schema';
+import { db } from '../src/db/index';
+import { user, properties } from '../src/db/schema';
 import { eq, inArray, sql } from 'drizzle-orm';
 
 async function setupOwnerData() {

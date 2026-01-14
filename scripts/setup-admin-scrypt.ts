@@ -1,6 +1,6 @@
 import 'dotenv/config';
-import { db } from './src/db/index';
-import { user, account } from './src/db/schema';
+import { db } from '../src/db/index';
+import { user, account } from '../src/db/schema';
 import { eq } from 'drizzle-orm';
 import { scryptAsync } from '@noble/hashes/scrypt.js';
 import { bytesToHex, hexToBytes } from '@noble/hashes/utils.js';

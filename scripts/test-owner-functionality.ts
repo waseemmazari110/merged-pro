@@ -3,8 +3,8 @@
  * Run this with: npx tsx test-owner-functionality.ts
  */
 
-import { db } from "./src/db";
-import { properties, availabilityCalendar } from "./src/db/schema";
+import { db } from '../src/db";
+import { properties, availabilityCalendar } from '../src/db/schema";
 import { eq } from "drizzle-orm";
 
 async function testOwnerFunctionality() {

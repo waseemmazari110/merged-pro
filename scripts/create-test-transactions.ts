@@ -4,10 +4,10 @@
  */
 
 import 'dotenv/config';
-import { db } from './src/db/index';
-import { payments, subscriptions, user } from './src/db/schema';
+import { db } from '../src/db/index';
+import { payments, subscriptions, user } from '../src/db/schema';
 import { eq } from 'drizzle-orm';
-import { nowUKFormatted } from './src/lib/date-utils';
+import { nowUKFormatted } from '../src/lib/date-utils';
 
 // Helper to format dates in UK format
 function formatDateUK(date: Date): string {

@@ -5,8 +5,8 @@
  * Run with: npx ts-node test-payment-system.ts
  */
 
-import { db } from './src/db';
-import { payments, subscriptions, user } from './src/db/schema';
+import { db } from '../src/db';
+import { payments, subscriptions, user } from '../src/db/schema';
 import { eq, desc } from 'drizzle-orm';
 
 async function testPaymentSystem() {
