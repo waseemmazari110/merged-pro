@@ -72,9 +72,11 @@ async function backfillMissingPayments() {
         // Fetch payment intents from Stripe for this subscription
         console.log(`  → Fetching payment intents from Stripe...`);
         
+        // Get payment intents for this customer with expanded charges
         const paymentIntents = await stripe.paymentIntents.list({
           customer: sub.stripeCustomerId || undefined,
           limit: 100,
+          expand: ['data.latest_charge'],
         });
 
         // Filter for payment intents related to this subscription
@@ -100,7 +102,10 @@ async function backfillMissingPayments() {
 
         // Create payment records for each payment intent
         for (const paymentIntent of relatedPayments) {
-          const charge = paymentIntent.charges?.data[0];
+          // Access the expanded latest_charge
+          const charge = typeof paymentIntent.latest_charge === 'object' 
+            ? paymentIntent.latest_charge 
+            : null;
           const paymentMethod = charge?.payment_method_details;
 
           // Check if payment already exists by payment intent ID
@@ -119,7 +124,7 @@ async function backfillMissingPayments() {
             stripeCustomerId: paymentIntent.customer as string || sub.stripeCustomerId || null,
             stripePaymentIntentId: paymentIntent.id,
             stripeChargeId: charge?.id || null,
-            stripeInvoiceId: paymentIntent.invoice as string || null,
+            stripeInvoiceId: paymentIntent.metadata?.invoice || paymentIntent.metadata?.invoiceId || null,
             stripeSubscriptionId: sub.stripeSubscriptionId,
             subscriptionPlan: sub.planName,
             userRole: userRecord?.role || 'owner',
