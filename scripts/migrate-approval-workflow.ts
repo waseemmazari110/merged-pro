@@ -56,7 +56,7 @@ async function migrateApprovalWorkflow() {
           approved_at = datetime('now', 'localtime')
       WHERE is_published = 1
     `);
-    console.log(`✅ Updated ${result.changes || 0} existing properties to approved\n`);
+    console.log(`✅ Updated ${result.rowsAffected || 0} existing properties to approved\n`);
 
     // Step 6: Verify migration
     console.log('🔍 Verifying migration...');
