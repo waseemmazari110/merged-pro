@@ -81,12 +81,13 @@ async function backfillMissingPayments() {
         const relatedPayments = paymentIntents.data.filter(pi => {
           // Check if payment intent is related to this subscription
           const metadata = pi.metadata || {};
-          const invoice = pi.invoice as string | null;
+          // Invoice ID is in metadata for subscription payments
+          const hasInvoice = metadata.invoice || metadata.invoiceId;
           
           return (
             metadata.subscriptionId === sub.stripeSubscriptionId ||
             pi.metadata?.subscriptionPlan === sub.planName ||
-            invoice // Has invoice (likely subscription-related)
+            hasInvoice // Has invoice metadata (likely subscription-related)
           );
         });
 
