@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,10 +11,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { Eye, EyeOff, Loader2, ArrowRight, ChevronLeft } from "lucide-react";
-import { SocialLoginButtons } from "./SocialLoginButtons";
 import { AccountTypeSelection } from "./AccountTypeSelection";
 import { trackEvent, AuthEvents } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
+
+// Lazy load SocialLoginButtons to avoid CSS preload warnings
+const SocialLoginButtons = dynamic(() => import("./SocialLoginButtons").then(mod => ({ default: mod.SocialLoginButtons })), {
+  loading: () => <div className="h-12" />,
+  ssr: true,
+});
 
 type AuthMode = "initial" | "login" | "signup" | "account-type";
 
@@ -263,7 +269,6 @@ export function UnifiedAuthForm({ initialMode = "initial" }: { initialMode?: Aut
                 // We'll add a slight delay or just keep it simple
               }
             }}
-            disabled={mode !== "initial"}
             required
             className={cn(
               "rounded-xl border-gray-300 h-12 focus:ring-[var(--color-accent-sage)]",
