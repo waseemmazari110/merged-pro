@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { user as userTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { addCorsHeaders, handleCorsPreFlight } from "@/lib/cors-utils";
 
 /**
  * User/Public Login Endpoint
@@ -10,6 +11,13 @@ import { eq } from "drizzle-orm";
  * - Creates session with user-specific cookie
  * - Clears any admin sessions
  */
+
+export async function OPTIONS(request: NextRequest) {
+  const preFlight = handleCorsPreFlight(request);
+  if (preFlight) return preFlight;
+  return new NextResponse(null, { status: 405 });
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Parse the request body
@@ -17,10 +25,11 @@ export async function POST(request: NextRequest) {
     const { email, password } = body;
 
     if (!email || !password) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: "Email and password required" },
         { status: 400 }
       );
+      return addCorsHeaders(response, request.headers.get('origin') || undefined);
     }
 
     // Verify user is NOT admin
@@ -31,10 +40,11 @@ export async function POST(request: NextRequest) {
       .get();
 
     if (publicUser && publicUser.role === "admin") {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: "Admin accounts cannot log in to public site. Use admin panel instead." },
         { status: 403 }
       );
+      return addCorsHeaders(response, request.headers.get('origin') || undefined);
     }
 
     // Create a new request object for the auth handler
@@ -66,14 +76,15 @@ export async function POST(request: NextRequest) {
     const responseData = await authResponse.json();
 
     if (!authResponse.ok) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: responseData.message || "Invalid email or password" },
         { status: authResponse.status }
       );
+      return addCorsHeaders(response, request.headers.get('origin') || undefined);
     }
 
     // Create response with the successful auth data
-    const response = NextResponse.json(responseData, {
+    let response = NextResponse.json(responseData, {
       status: 200,
     });
 
@@ -102,12 +113,16 @@ export async function POST(request: NextRequest) {
       response.cookies.delete("better-auth.session_token");
     }
 
+    // Add CORS headers
+    response = addCorsHeaders(response, request.headers.get('origin') || undefined);
+
     return response;
   } catch (error) {
     console.error("[User Auth] Login error:", error);
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: "Authentication failed" },
       { status: 500 }
     );
+    return addCorsHeaders(response, request.headers.get('origin') || undefined);
   }
 }

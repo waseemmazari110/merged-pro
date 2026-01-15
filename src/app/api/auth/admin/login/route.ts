@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { user as userTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { addCorsHeaders, handleCorsPreFlight } from "@/lib/cors-utils";
 
 /**
  * Admin Login Endpoint
@@ -10,6 +11,13 @@ import { eq } from "drizzle-orm";
  * - Creates session with admin-specific cookie
  * - Returns admin session token
  */
+
+export async function OPTIONS(request: NextRequest) {
+  const preFlight = handleCorsPreFlight(request);
+  if (preFlight) return preFlight;
+  return new NextResponse(null, { status: 405 });
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Parse the request body
@@ -18,10 +26,11 @@ export async function POST(request: NextRequest) {
 
     // Strict validation - both fields must be non-empty strings
     if (!email || !password || typeof email !== 'string' || typeof password !== 'string') {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: "Email and password required" },
         { status: 400 }
       );
+      return addCorsHeaders(response, request.headers.get('origin') || undefined);
     }
 
     // Trim and validate non-empty
@@ -29,10 +38,11 @@ export async function POST(request: NextRequest) {
     const trimmedPassword = password.trim();
 
     if (!trimmedEmail || !trimmedPassword) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: "Email and password cannot be empty" },
         { status: 400 }
       );
+      return addCorsHeaders(response, request.headers.get('origin') || undefined);
     }
 
     // First check if user is admin in database
@@ -43,10 +53,11 @@ export async function POST(request: NextRequest) {
       .get();
 
     if (!adminUser || adminUser.role !== "admin") {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: "Admin access only. User account not authorized." },
         { status: 403 }
       );
+      return addCorsHeaders(response, request.headers.get('origin') || undefined);
     }
 
     // Create a new request object for the auth handler
@@ -78,14 +89,15 @@ export async function POST(request: NextRequest) {
     const responseData = await authResponse.json();
 
     if (!authResponse.ok) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: responseData.message || "Invalid email or password" },
         { status: authResponse.status }
       );
+      return addCorsHeaders(response, request.headers.get('origin') || undefined);
     }
 
     // Create response with the successful auth data
-    const response = NextResponse.json(responseData, {
+    let response = NextResponse.json(responseData, {
       status: 200,
     });
 
@@ -98,12 +110,16 @@ export async function POST(request: NextRequest) {
     // CLEAR any conflicting user session cookies
     response.cookies.delete("user-session-token");
 
+    // Add CORS headers
+    response = addCorsHeaders(response, request.headers.get('origin') || undefined);
+
     return response;
   } catch (error) {
     console.error("[Admin Auth] Login error:", error);
-    return NextResponse.json(
+    const response = NextResponse.json(
       { error: "Authentication failed" },
       { status: 500 }
     );
+    return addCorsHeaders(response, request.headers.get('origin') || undefined);
   }
 }

@@ -61,6 +61,8 @@ export const auth = betterAuth({
 		"http://192.168.0.171:3000",
 		"http://192.168.1.80:3000",
 		"https://appleid.apple.com",
+		"https://merged-pro.vercel.app",
+		"https://*.vercel.app",
 		...(process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(",").map(o => o.trim()) || [])
 	],
 	socialProviders: {
