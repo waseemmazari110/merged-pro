@@ -18,9 +18,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Search, Filter, RefreshCw } from "lucide-react";
-import { format } from "date-fns";
+import { Search, Filter, RefreshCw, Trash2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { formatDatabaseDateToUK } from "@/lib/date-utils";
 
 interface User {
   id: string;
@@ -39,6 +39,7 @@ export default function AdminUsersPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [paymentFilter, setPaymentFilter] = useState<string>("all");
+  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -85,6 +86,36 @@ export default function AdminUsersPage() {
       }
     } catch (error) {
       toast.error("Error activating user");
+    }
+  };
+
+  const handleDeleteUser = async (userId: string, userName: string) => {
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete this user? This action cannot be undone.\n\nUser: ${userName}`
+    );
+
+    if (!confirmDelete) return;
+
+    setDeletingUserId(userId);
+    try {
+      const response = await fetch("/api/admin/users/delete", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: userId }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success(`User ${userName} has been deleted`);
+        fetchUsers();
+      } else {
+        toast.error(data.error || "Failed to delete user");
+      }
+    } catch (error) {
+      toast.error("Error deleting user");
+    } finally {
+      setDeletingUserId(null);
     }
   };
 
@@ -230,7 +261,7 @@ export default function AdminUsersPage() {
                     <TableCell>{getPaymentBadge(user.paymentStatus)}</TableCell>
                     <TableCell>{user.propertyCount}</TableCell>
                     <TableCell>
-                      {format(new Date(user.createdAt), "dd MMM yyyy")}
+                      {formatDatabaseDateToUK(user.createdAt)}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center justify-end gap-2">
@@ -245,6 +276,16 @@ export default function AdminUsersPage() {
                             Activate
                           </Button>
                         )}
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleDeleteUser(user.id, user.name)}
+                          disabled={deletingUserId === user.id}
+                          title="Delete this user"
+                        >
+                          <Trash2 className="w-4 h-4 mr-1" />
+                          Delete
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>

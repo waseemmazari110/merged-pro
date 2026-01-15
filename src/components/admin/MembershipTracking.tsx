@@ -14,9 +14,11 @@ import {
   CheckCircle,
   XCircle,
   Clock,
+  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatDatabaseDateToUK } from "@/lib/date-utils";
+import { toast } from "sonner";
 
 interface MembershipData {
   id: string;
@@ -49,6 +51,7 @@ export default function MembershipTracking() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [deletingMemberId, setDeletingMemberId] = useState<string | null>(null);
 
   useEffect(() => {
     loadMembershipData();
@@ -72,6 +75,36 @@ export default function MembershipTracking() {
       console.error("Failed to load membership data:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteMembership = async (memberId: string, memberName: string, memberEmail: string) => {
+    const confirmDelete = window.confirm(
+      `Are you sure you want to cancel this membership?\n\nUser: ${memberName} (${memberEmail})\n\nThis will remove their subscription but keep their account.`
+    );
+
+    if (!confirmDelete) return;
+
+    setDeletingMemberId(memberId);
+    try {
+      const response = await fetch("/api/admin/memberships/delete", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: memberId }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success(`Membership for ${memberName} has been cancelled`);
+        loadMembershipData();
+      } else {
+        toast.error(data.error || "Failed to delete membership");
+      }
+    } catch (error) {
+      toast.error("Error deleting membership");
+    } finally {
+      setDeletingMemberId(null);
     }
   };
 
@@ -265,12 +298,15 @@ export default function MembershipTracking() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Payment
                 </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredMembers.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
                     {searchQuery || filterStatus !== "all"
                       ? "No members match your filters"
                       : "No members yet"}
@@ -297,11 +333,11 @@ export default function MembershipTracking() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">{member.signupDate}</div>
+                      <div className="text-sm text-gray-900">{formatDatabaseDateToUK(member.signupDate)}</div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-sm text-gray-900">
-                        {member.currentPeriodEnd}
+                        {formatDatabaseDateToUK(member.currentPeriodEnd)}
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -316,6 +352,19 @@ export default function MembershipTracking() {
                       ) : (
                         <Badge variant="destructive">Failed</Badge>
                       )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() =>
+                          handleDeleteMembership(member.id, member.name, member.email)
+                        }
+                        disabled={deletingMemberId === member.id}
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        {deletingMemberId === member.id ? "Deleting..." : "Delete"}
+                      </Button>
                     </td>
                   </tr>
                 ))
