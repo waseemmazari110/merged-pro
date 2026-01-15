@@ -188,3 +188,6 @@ export async function getCurrentUser(request: NextRequest) {
 	const session = await auth.api.getSession({ headers: await headers() });
 	return session?.user || null;
 }
+
+// Explicit re-export to ensure types are available
+export type { ExtendedSession, ExtendedUser };
