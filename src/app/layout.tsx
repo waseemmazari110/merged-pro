@@ -9,6 +9,7 @@ import UKServiceSchema from "@/components/UKServiceSchema";
 import OrganizationSchema from "@/components/OrganizationSchema";
 import BreadcrumbSchema from "@/components/BreadcrumbSchema";
 import VisualEditsMessenger from "@/visual-edits/VisualEditsMessenger";
+import { AdminRedirectGuard } from "@/components/AdminRedirectGuard";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -100,6 +101,7 @@ const playfair = Playfair_Display({
           <link rel="dns-prefetch" href="https://slelguoygbfzlpylpxfs.supabase.co" />
         </head>
         <body className={`${inter.variable} ${playfair.variable} antialiased font-body`}>
+          <AdminRedirectGuard />
           <OrganizationSchema />
           <BreadcrumbSchema />
           <ErrorReporter />

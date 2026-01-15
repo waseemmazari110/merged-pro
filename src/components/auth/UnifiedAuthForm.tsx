@@ -85,16 +85,26 @@ export function UnifiedAuthForm({ initialMode = "initial" }: { initialMode?: Aut
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setPasswordError("");
 
     try {
-      const { data, error } = await authClient.signIn.email({
-        email,
-        password,
-        rememberMe,
+      // Use custom user login endpoint instead of authClient
+      const response = await fetch('/api/auth/user/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Important for cookies
+        body: JSON.stringify({
+          email,
+          password,
+        }),
       });
 
-      if (error) {
-        toast.error(error.message || "Invalid credentials");
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast.error(data.error || "Invalid credentials");
         setIsLoading(false);
         return;
       }
@@ -102,9 +112,14 @@ export function UnifiedAuthForm({ initialMode = "initial" }: { initialMode?: Aut
       trackEvent(AuthEvents.LOGIN_SUCCESS);
       toast.success("Welcome back!");
       
-      const user = data?.user as any;
-      router.push(user?.role === "owner" ? "/owner-dashboard" : "/account/dashboard");
+      // Determine redirect based on user role from response
+      const user = data?.user || {};
+      const redirectUrl = user?.role === "owner" ? "/owner-dashboard" : "/account/dashboard";
+      
+      // Use window.location for safer redirect
+      window.location.href = redirectUrl;
     } catch (err) {
+      console.error("Login error:", err);
       toast.error("An error occurred during sign in");
       setIsLoading(false);
     }
@@ -173,8 +188,12 @@ export function UnifiedAuthForm({ initialMode = "initial" }: { initialMode?: Aut
       trackEvent(role === "owner" ? AuthEvents.SELECT_ACCOUNT_TYPE_OWNER : AuthEvents.SELECT_ACCOUNT_TYPE_CUSTOMER);
       
       toast.success("Account created successfully!");
-      router.push(role === "owner" ? "/owner-dashboard" : "/account/dashboard");
+      
+      // Redirect to appropriate dashboard using window.location
+      const redirectUrl = role === "owner" ? "/owner-dashboard" : "/account/dashboard";
+      window.location.href = redirectUrl;
     } catch (err) {
+      console.error("Sign up error:", err);
       toast.error("An error occurred during sign up");
       setIsLoading(false);
     }

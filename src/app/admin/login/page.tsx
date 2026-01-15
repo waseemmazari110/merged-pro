@@ -53,39 +53,30 @@ export default function AdminLoginPage() {
     setIsLoading(true);
 
     try {
-      const { data, error } = await authClient.signIn.email({
-        email,
-        password,
+      // Use custom admin login endpoint
+      const response = await fetch('/api/auth/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Important for cookies
+        body: JSON.stringify({
+          email,
+          password,
+        }),
       });
 
-      if (error) {
-        toast.error("Invalid credentials");
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast.error(data.error || "Invalid credentials");
         setIsLoading(false);
         return;
       }
 
-      // Verify admin role
-      if (data?.user) {
-        const userResponse = await fetch("/api/user/profile", { cache: 'no-store' });
-        
-        if (userResponse.ok) {
-          const userData = await userResponse.json();
-          
-          if (userData.role !== "admin") {
-            toast.error("Access denied. Admin privileges required.");
-            await authClient.signOut();
-            setIsLoading(false);
-            return;
-          }
-          
-          toast.success("Welcome back, Admin!");
-          router.replace("/admin/dashboard");
-        } else {
-          toast.error("Authentication failed. Please try again.");
-          await authClient.signOut();
-          setIsLoading(false);
-        }
-      }
+      toast.success("Welcome back, Admin!");
+      // Use window.location for safer redirect
+      window.location.href = "/admin/dashboard";
     } catch (error) {
       console.error("Login error:", error);
       toast.error("An error occurred. Please try again.");
