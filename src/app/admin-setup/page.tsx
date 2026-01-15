@@ -1,6 +1,48 @@
-import { redirect } from 'next/navigation';
+'use client';
+
+import { useState } from 'react';
 
 export default function AdminSetupPage() {
+  const [secret, setSecret] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [response, setResponse] = useState<any>(null);
+  const [error, setError] = useState('');
+
+  const handleSetup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!secret.trim()) {
+      setError('Please enter the setup secret');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    setResponse(null);
+
+    try {
+      const res = await fetch('/api/admin/setup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${secret}`
+        }
+      });
+
+      const data = await res.json();
+      
+      if (res.ok) {
+        setResponse(data);
+      } else {
+        setError(data.error || 'Setup failed');
+      }
+    } catch (err) {
+      setError(`Error: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div style={{
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -32,31 +74,14 @@ export default function AdminSetupPage() {
           borderRadius: '5px',
           fontSize: '13px',
           marginBottom: '20px',
+          fontFamily: 'monospace',
         }}>
           <strong>Default Credentials:</strong><br />
           Email: cswaseem110@gmail.com<br />
           Password: Admin123
         </div>
 
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          const secret = (e.target as any).secret.value.trim();
-          if (!secret) {
-            alert('Please enter the setup secret');
-            return;
-          }
-          fetch('/api/admin/setup', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${secret}`
-            }
-          }).then(r => r.json()).then(data => {
-            alert(JSON.stringify(data, null, 2));
-          }).catch(e => {
-            alert(`Error: ${e.message}`);
-          });
-        }}>
+        <form onSubmit={handleSetup} style={{ marginBottom: '20px' }}>
           <div style={{ marginBottom: '20px' }}>
             <label style={{
               display: 'block',
@@ -69,7 +94,8 @@ export default function AdminSetupPage() {
             </label>
             <input
               type="password"
-              name="secret"
+              value={secret}
+              onChange={(e) => setSecret(e.target.value)}
               placeholder="Enter the setup secret token"
               style={{
                 width: '100%',
@@ -78,27 +104,66 @@ export default function AdminSetupPage() {
                 borderRadius: '5px',
                 fontSize: '14px',
                 fontFamily: 'monospace',
+                boxSizing: 'border-box',
               }}
+              disabled={loading}
             />
           </div>
 
           <button
             type="submit"
+            disabled={loading}
             style={{
               width: '100%',
               padding: '12px 20px',
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              background: loading ? '#999' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
               color: 'white',
               border: 'none',
               borderRadius: '5px',
               fontSize: '16px',
               fontWeight: 600,
-              cursor: 'pointer',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              transition: 'transform 0.2s',
             }}
+            onMouseDown={(e) => !loading && (e.currentTarget.style.transform = 'translateY(2px)')}
+            onMouseUp={(e) => !loading && (e.currentTarget.style.transform = 'translateY(0)')}
           >
-            Setup Admin User
+            {loading ? 'Setting up...' : 'Setup Admin User'}
           </button>
         </form>
+
+        {error && (
+          <div style={{
+            background: '#f8d7da',
+            border: '1px solid #f5c6cb',
+            color: '#721c24',
+            padding: '12px 15px',
+            borderRadius: '5px',
+            fontSize: '13px',
+            marginBottom: '20px',
+            fontFamily: 'monospace',
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word',
+          }}>
+            {error}
+          </div>
+        )}
+
+        {response && (
+          <div style={{
+            background: '#d4edda',
+            border: '1px solid #c3e6cb',
+            color: '#155724',
+            padding: '12px 15px',
+            borderRadius: '5px',
+            fontSize: '13px',
+            fontFamily: 'monospace',
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word',
+          }}>
+            {JSON.stringify(response, null, 2)}
+          </div>
+        )}
       </div>
     </div>
   );
